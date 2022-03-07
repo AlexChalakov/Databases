@@ -10,10 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
-
-
 //https://github.com/simoc/csvjdbc
 import org.relique.jdbc.csv.CsvDriver;
+
 /**
  * Class which needs to be modified in order to complete some of the later milestones
  */
@@ -53,6 +52,34 @@ public class Populator {
     public String milestone1(String csvFileName, String tableToInsertInto) {
         String result = "";
         // TODO
+
+        Populator populator=new Populator();
+        Connection csv = populator.csvConn();
+
+        // get a list of tables and views
+        System.out.println("List of table names based on CSV files");
+        //DatabaseMetaData md = csv.getMetaData();
+        //ResultSet rs = md.getTables(null, null, "%", null);
+        //while (rs.next()) {
+           // System.out.println(rs.getString(3));
+        //}
+
+        // Create a Statement object to execute the query with.
+        // A Statement is not thread-safe.
+        Statement stmt = csv.createStatement();
+
+        // Select the ID and NAME columns from sample.csv
+        ResultSet results = stmt.executeQuery("SELECT r,g FROM S order by r ASC");
+        
+        // Dump out the results to a CSV file with the same format
+        // using CsvJdbc helper function
+        boolean append = true;
+        System.out.println("\nData from planets.csv");
+        CsvDriver.writeToCsv(results, System.out, append);
+        System.out.println("\nData from human table");
+        CsvDriver.writeToCsv(sqlite.createStatement().executeQuery("SELECT r,g FROM S order by r ASC"),
+                System.out, append);
+
         return result;
     }
 

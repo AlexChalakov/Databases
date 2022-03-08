@@ -8,10 +8,12 @@ import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.TreeSet;
 
 //https://github.com/simoc/csvjdbc
 import org.relique.jdbc.csv.CsvDriver;
+import org.relique.jdbc.csv.StringConverter;
 
 /**
  * Class which needs to be modified in order to complete some of the later milestones
@@ -19,6 +21,10 @@ import org.relique.jdbc.csv.CsvDriver;
 public class Populator {
 
     public static final boolean debug=false;
+    private static final String DEFAULT_DATE_FORMAT = "YYYY-MM-DD";
+    private static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
+    private static final String DEFAULT_TIMESTAMP_FORMAT = null;
+    private static final String DEFAULT_TIME_ZONE_NAME = "UTC";
     /**
      * Constructor
      */
@@ -26,7 +32,6 @@ public class Populator {
 
     }
 
-    
     /** 
      * @param args standard main args
      * @throws Exception it could all go horribly wrong
@@ -54,8 +59,15 @@ public class Populator {
         // TODO
 
         try{
+            String dateFormat = DEFAULT_DATE_FORMAT;
+            String timeFormat = DEFAULT_TIME_FORMAT;
+            String timestampFormat = DEFAULT_TIMESTAMP_FORMAT;
+            String timeZoneName = DEFAULT_TIME_ZONE_NAME;
+            Locale locale = null;
+
             Populator populator=new Populator();
             Connection csv = populator.csvConn();
+            
 
             // get a list of tables and views
             System.out.println("List of table names based on CSV files");
@@ -63,6 +75,7 @@ public class Populator {
             String[] types = {"TABLE"};
             ResultSet rs = md.getTables(null, null, "%", types);
             
+            //printing the list of tables, can be seen in the terminal
             while(rs.next()){
                 System.out.println(rs.getString("TABLE_NAME"));
             }
@@ -78,8 +91,27 @@ public class Populator {
             // using CsvJdbc helper function
             boolean append = true;
 
+            StringConverter converter = new StringConverter(dateFormat, timeFormat, timestampFormat, timeZoneName, locale);
             ResultSetMetaData metaData = null;
-            int columnCount = 0;
+            int countColumn = 0;
+            String nameColumn = null;
+
+            //getting the headers and initialising them into the nameColumn variable
+            while(results.next()){
+                if(metaData == null){
+                    
+                    metaData = results.getMetaData();
+				    countColumn = metaData.getColumnCount();
+
+                    for (int i = 1; i <= countColumn; i++)
+					{
+						if (i > 1){
+                            nameColumn = metaData.getColumnName(i) + ",";
+                        }
+					}
+                    nameColumn = nameColumn.substring(0, nameColumn.length() - 1);
+                }
+            }
 
             System.out.println("\nData from planets.csv");
             CsvDriver.writeToCsv(results, System.out, append);
@@ -536,7 +568,6 @@ public class Populator {
 
 
     /**
-     * 
      * method to change the home world of a person S  NB if the planet does not exist
      * @param i is the r of the person entity (S)
      * @param planetName is the name of the planet that the person moves to (attribute d in entity D)

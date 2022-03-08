@@ -10,10 +10,11 @@ CREATE TABLE S(
     r INTEGER,
     a DATE,
     g VARCHAR(64),
-    c, 
+    c_A,
+    c_K, 
     PRIMARY KEY (r), 
-    FOREIGN KEY(c) REFERENCES D(A_c), 
-    FOREIGN KEY(c) REFERENCES D(K_c)
+    FOREIGN KEY(c_A) REFERENCES D(c), 
+    FOREIGN KEY(c_K) REFERENCES D(c)
     ); /* language.csv - correct*/
 
 CREATE TABLE F(

@@ -25,6 +25,10 @@ public class Populator {
     private static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
     private static final String DEFAULT_TIMESTAMP_FORMAT = null;
     private static final String DEFAULT_TIME_ZONE_NAME = "UTC";
+    //private static final char DEFAULT_QUOTECHAR = '"';
+    //private static final String DEFAULT_SEPARATOR = ",";
+    //private static final String DEFAULT_QUOTE_STYLE = "SQL";
+
     /**
      * Constructor
      */
@@ -59,6 +63,9 @@ public class Populator {
         // TODO
 
         try{
+            //Character quoteChar = Character.valueOf(DEFAULT_QUOTECHAR);
+            //String separator = DEFAULT_SEPARATOR;
+            //String quoteStyle = DEFAULT_QUOTE_STYLE;
             String dateFormat = DEFAULT_DATE_FORMAT;
             String timeFormat = DEFAULT_TIME_FORMAT;
             String timestampFormat = DEFAULT_TIMESTAMP_FORMAT;
@@ -100,8 +107,8 @@ public class Populator {
             while(results.next()){
                 if(metaData == null){
                     
-                    metaData = results.getMetaData();
-				    countColumn = metaData.getColumnCount();
+                    metaData = results.getMetaData(); //getting metadata
+				    countColumn = metaData.getColumnCount(); //getting our column count
 
                     for (int i = 1; i <= countColumn; i++)
 					{
@@ -113,6 +120,42 @@ public class Populator {
                 }
             }
 
+            for (int i = 1; i <= countColumn; i++)
+			{
+				String value = null;
+                
+                /*
+				 * Use same dateFormat, timeFormat and timestampFormat for output as the input CSV file.
+				 */
+				int columnType = metaData.getColumnType(i);
+				if (columnType == Types.DATE)
+				{
+					Date d = rs.getDate(i);
+					if (d != null){
+						value = converter.formatDate(d);
+                    }
+                        
+				}
+				else if (columnType == Types.TIME)
+				{
+					Time t = rs.getTime(i);
+					if (t != null){
+						value = converter.formatTime(t);
+                    }
+				}
+				else if (columnType == Types.TIMESTAMP)
+				{
+					Timestamp timestamp = rs.getTimestamp(i);
+					if (timestamp != null){
+						value = converter.formatTimestamp(timestamp);
+                    }
+				}
+				else
+				{
+					value = rs.getString(i);
+				}
+            }
+            
             System.out.println("\nData from planets.csv");
             CsvDriver.writeToCsv(results, System.out, append);
             System.out.println("\nData from human table");

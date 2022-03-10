@@ -41,10 +41,12 @@ public class Populator {
      * @throws Exception it could all go horribly wrong
      */
     public static void main(String[] args) throws Exception {
-        dummyExample();
+        //dummyExample();
         // calls to methods which will complete the database setup and data population
         Populator p = new Populator();
         p.setup("solution.sql");
+        p.milestone1("B.csv", "B");
+        //p.milestone2("B.csv", "B", "output", false);
     }
 
     /**
@@ -92,7 +94,7 @@ public class Populator {
             Statement stmt = csv.createStatement();
 
             // Select the ID and NAME columns from sample.csv
-            ResultSet results = stmt.executeQuery("SELECT r,g FROM S order by r ASC");
+            ResultSet results = stmt.executeQuery("SELECT i,l FROM B");
             
             // Dump out the results to a CSV file with the same format
             // using CsvJdbc helper function
@@ -101,7 +103,10 @@ public class Populator {
             StringConverter converter = new StringConverter(dateFormat, timeFormat, timestampFormat, timeZoneName, locale);
             ResultSetMetaData metaData = null;
             int countColumn = 0;
-            String nameColumn = null;
+            String nameColumn = "";
+
+            System.out.println("");
+            System.out.println("Init Testing");
 
             //getting the headers and initialising them into the nameColumn variable
             while(results.next()){
@@ -109,58 +114,69 @@ public class Populator {
                     
                     metaData = results.getMetaData(); //getting metadata
 				    countColumn = metaData.getColumnCount(); //getting our column count
+                    //System.out.println(countColumn);
 
-                    for (int i = 1; i <= countColumn; i++)
+                    for (int i = 0; i <= countColumn; i++)
 					{
-						if (i > 1){
-                            nameColumn = metaData.getColumnName(i) + ",";
+						if (i > 0){
+                            nameColumn += metaData.getColumnName(i) + ",";
                         }
 					}
                     nameColumn = nameColumn.substring(0, nameColumn.length() - 1);
+                    System.out.println("Column Names: " + nameColumn + "\n");
                 }
             }
 
             for (int i = 1; i <= countColumn; i++)
 			{
 				String value = null;
-                
+                //System.out.println("TESTING");
                 /*
 				 * Use same dateFormat, timeFormat and timestampFormat for output as the input CSV file.
 				 */
 				int columnType = metaData.getColumnType(i);
-				if (columnType == Types.DATE)
-				{
-					Date d = rs.getDate(i);
-					if (d != null){
-						value = converter.formatDate(d);
+                String columnTypeName = metaData.getColumnTypeName(i);
+                System.out.println(columnType);
+                System.out.println(columnTypeName);
+
+				if (columnType == Types.DATE){
+					Date d = results.getDate(i);
+                    java.sql.Date sDate = new java.sql.Date(d.getTime());
+					if (sDate != null){
+						value = converter.formatDate(sDate);
+
+                        System.out.println(value);
+                        System.out.println(value.getClass().getName());
                     }
                         
 				}
-				else if (columnType == Types.TIME)
-				{
-					Time t = rs.getTime(i);
+				else if (columnType == Types.TIME){
+					Time t = results.getTime(i);
 					if (t != null){
 						value = converter.formatTime(t);
+
+                        System.out.println(value);
+                        System.out.println(value.getClass().getName());
                     }
 				}
-				else if (columnType == Types.TIMESTAMP)
-				{
-					Timestamp timestamp = rs.getTimestamp(i);
-					if (timestamp != null){
-						value = converter.formatTimestamp(timestamp);
+                else if (columnType == Types.INTEGER){
+                    value = results.getString(i);
+                    Integer integer = Integer.parseInt(value);
+
+                    System.out.println(integer);
+                    if(value != null){
+                        System.out.println(integer.getClass().getName());
                     }
-				}
-				else
-				{
-					value = rs.getString(i);
-				}
+                }
+                else if (columnType == Types.VARCHAR){
+                    value = results.getString(i);   
+                    
+                    System.out.println(value);
+                    if(value != null){
+                        System.out.println(value.getClass().getName());
+                    }
+                }
             }
-            
-            System.out.println("\nData from planets.csv");
-            CsvDriver.writeToCsv(results, System.out, append);
-            System.out.println("\nData from human table");
-            CsvDriver.writeToCsv(sqlite.createStatement().executeQuery("SELECT r,g FROM S order by r ASC"),
-                    System.out, append);
         } catch (Exception e) {
             System.out.println(e);
         }

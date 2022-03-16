@@ -59,7 +59,7 @@ CREATE TABLE G(
     r INTEGER, 
     FOREIGN KEY(i) REFERENCES B(i), 
     FOREIGN KEY(r) REFERENCES S(r)
-    ); /*correct*/
+    ); /*correct - check for primary keys, put both i and r together as one*/
 
 CREATE TABLE H(
     c INTEGER, 
@@ -86,6 +86,8 @@ CREATE TABLE I(
 
 /*many to many - new table*/
 /*many to one - reference the inbetween table*/
+
+/*INSERT STATEMENTS*/
 
 INSERT INTO D(c,d,e) VALUES (11,'Hyrakius',NULL);
 INSERT INTO D(c,d,e) VALUES (2,'Bgztl',8);
@@ -121,3 +123,12 @@ INSERT INTO R(r,q,p,c) VALUES (19,'Lar Gand ','Mon-El ',7);
 INSERT INTO R(r,q,p,c) VALUES (4,'Luornu Durgo ','Triplicate Girl ',5);
 INSERT INTO R(r,q,p,c) VALUES (24,'Andrew Nolan ','Ferro Lad ',10);
 INSERT INTO R(r,q,p,c) VALUES (36,'Pol Krinn ','Magnetic Kid ',4);
+
+/*CREATING INDEXES*/
+
+CREATE UNIQUE INDEX IF NOT EXISTS d_idx ON D(c asc) WHERE c IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS s_idx ON S(r asc) WHERE r IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS f_idx ON F(b asc) WHERE b IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS b_idx ON B(i asc) WHERE i IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS l_idx ON L(h asc) WHERE h IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS r_idx ON R(r asc) WHERE r IS NOT NULL;

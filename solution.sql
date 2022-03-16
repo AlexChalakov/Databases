@@ -23,7 +23,7 @@ CREATE TABLE F(
     f VARCHAR(64), 
     PRIMARY KEY(b,f), 
     FOREIGN KEY(r) REFERENCES S(r)
-    ); /*planets.cvs -  correct - Q_r*/
+    ); /*planets.cvs -  correct - check for Q_r*/
 
 CREATE TABLE B(
     i VARCHAR(64), 
@@ -34,16 +34,10 @@ CREATE TABLE B(
 CREATE TABLE L(
     c VARCHAR(64), 
     h VARCHAR(64), 
-    u, 
+    u TEXT, 
     PRIMARY KEY(h), 
     FOREIGN KEY(c) REFERENCES D(c)
     ); /*powers.csv - correct*/
-
-CREATE TABLE T(
-    t, 
-    k, 
-    PRIMARY KEY(t)
-    ); /*correct*/
 
 CREATE TABLE R(
     r INTEGER, 
@@ -54,35 +48,76 @@ CREATE TABLE R(
     FOREIGN KEY(c) REFERENCES D(c)
     ); /*missions.csv - correct*/
 
+CREATE TABLE T(
+    t VARCHAR(64), 
+    k VARCHAR(64), 
+    PRIMARY KEY(t)
+    ); /*correct check if its actually varchar*/
+
 CREATE TABLE G(
-    i, 
-    r, 
+    i VARCHAR(64), 
+    r INTEGER, 
     FOREIGN KEY(i) REFERENCES B(i), 
     FOREIGN KEY(r) REFERENCES S(r)
     ); /*correct*/
 
 CREATE TABLE H(
-    c, 
-    t, 
-    r, 
-    FOREIGN KEY(r) REFERENCES S(r), 
-    FOREIGN KEY(t) REFERENCES T(t), 
-    FOREIGN KEY(c) REFERENCES D(c)
+    c INTEGER, 
+    t VARCHAR(64), 
+    r INTEGER,
+    FOREIGN KEY(c) REFERENCES D(c),
+    FOREIGN KEY(t) REFERENCES T(t),
+    FOREIGN KEY(r) REFERENCES S(r)
     ); /*correct*/
 
 CREATE TABLE C(
-    h, 
-    i, 
+    h VARCHAR(64), 
+    i VARCHAR(64), 
     FOREIGN KEY(h) REFERENCES L(h), 
     FOREIGN KEY(i) REFERENCES B(i)
     ); /*correct*/
 
 CREATE TABLE I(
-    c, 
-    i, 
+    c INTEGER, 
+    i VARCHAR(64), 
     FOREIGN KEY(c) REFERENCES D(c), 
     FOREIGN KEY(i) REFERENCES B(i)
     ); /*correct*/
 
 /*many to many - new table*/
-/*many to one - reference the inbetween table
+/*many to one - reference the inbetween table*/
+
+INSERT INTO D(c,d,e) VALUES (11,'Hyrakius',NULL);
+INSERT INTO D(c,d,e) VALUES (2,'Bgztl',8);
+INSERT INTO D(c,d,e) VALUES (17,'Rimbor',30);
+INSERT INTO D(c,d,e) VALUES (13,'Krypton',0);
+INSERT INTO D(c,d,e) VALUES (6,'Colu',30);
+
+INSERT INTO S(j,r,a,g) VALUES (22,14,2000-01-01,'');
+INSERT INTO S(j,r,a,g) VALUES (22,29,2000-01-01,'Brin Londo ');
+INSERT INTO S(j,r,a,g) VALUES (22,34,2000-01-01,'Mysa Nal ');
+INSERT INTO S(j,r,a,g) VALUES (22,26,2000-01-01,"Projectra Wind'zzor ");
+INSERT INTO S(j,r,a,g) VALUES (22,19,2000-01-01,'Lar Gand ');
+
+INSERT INTO F(r,b,f) VALUES (14,49,'Telescopic/Microscopic Vision');
+INSERT INTO F(r,b,f) VALUES (33,102,'Superhuman strength');
+INSERT INTO F(r,b,f) VALUES (36,108,'Magnetism manipulation');
+INSERT INTO F(r,b,f) VALUES (19,72,'X-Ray Vision');
+INSERT INTO F(r,b,f) VALUES (13,39,'Eidetic memory');
+
+INSERT INTO B(i,l) VALUES ('En','English');
+INSERT INTO B(i,l) VALUES ('Kl','Klingon');
+INSERT INTO B(i,l) VALUES ('02','Obfiscation');
+INSERT INTO B(i,l) VALUES ('Ob','Obduron');
+INSERT INTO B(i,l) VALUES ('Fr','French');
+
+INSERT INTO L(c,h,u) VALUES ('Zorgorn','Mission on non-existant planet',NULL);
+INSERT INTO L(c,h,u) VALUES ('Earth','Earth War',NULL);
+INSERT INTO L(c,h,u) VALUES ('Daxam','Planet Kidnap',NULL);
+INSERT INTO L(c,h,u) VALUES ('Apocalypse','Darkseid',NULL);
+
+INSERT INTO R(r,q,p,c) VALUES (27,'Tasmia Mallor ','Shadow Lass ',19);
+INSERT INTO R(r,q,p,c) VALUES (19,'Lar Gand ','Mon-El ',7);
+INSERT INTO R(r,q,p,c) VALUES (4,'Luornu Durgo ','Triplicate Girl ',5);
+INSERT INTO R(r,q,p,c) VALUES (24,'Andrew Nolan ','Ferro Lad ',10);
+INSERT INTO R(r,q,p,c) VALUES (36,'Pol Krinn ','Magnetic Kid ',4);

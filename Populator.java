@@ -94,7 +94,7 @@ public class Populator {
             Statement stmt = csv.createStatement();
 
             // Select the ID and NAME columns from sample.csv
-            ResultSet results = stmt.executeQuery("SELECT i,l FROM B");
+            ResultSet results = stmt.executeQuery("SELECT * FROM" + csvFileName);
             
             // Dump out the results to a CSV file with the same format
             // using CsvJdbc helper function

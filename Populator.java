@@ -8,13 +8,12 @@ import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-//import java.util.Locale;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.junit.platform.commons.util.StringUtils;
 //https://github.com/simoc/csvjdbc
 import org.relique.jdbc.csv.CsvDriver;
-//import org.relique.jdbc.csv.StringConverter;
 
 /**
  * Class which needs to be modified in order to complete some of the later milestones
@@ -62,30 +61,11 @@ public class Populator {
             Connection csv = csvConn();
             Connection sqliteConnection = sqliteConn();
 
-            // get a list of tables and views
-            System.out.println("List of table names based on CSV files");
-            DatabaseMetaData md = csv.getMetaData();
-            String[] types = {"TABLE"};
-            ResultSet rs = md.getTables(null, null, "%", types);
-            
-            //printing the list of tables, can be seen in the terminal
-            while(rs.next()){
-                System.out.println(rs.getString("TABLE_NAME"));
-            }
-
              /**
              * Getting table attributes.
              * @author David Bowes
              */
             DatabaseMetaData metaDataSql = sqliteConnection.getMetaData();
-            
-            System.out.println("");
-            System.out.println("Actual list of tables in the SQLITE Database:");
-            ResultSet ts = metaDataSql.getTables(null, null, "%", new String[] {"TABLE"});
-            while (ts.next()){
-                System.out.println(ts.getString(3));
-            }
-
             TreeMap<String, Attribute> arrayList = new TreeMap<>();
             ResultSet resultSet = metaDataSql.getColumns(null, null, tableToInsertInto, null);
             String name = null;
@@ -99,56 +79,51 @@ public class Populator {
             // Create a Statement object to execute the query with.
             // A Statement is not thread-safe.
             Statement stmt = csv.createStatement();
-            // Select the ID and NAME columns from sample.csv
+
+            // Declare all the needed variables
             ResultSet results = stmt.executeQuery("SELECT * FROM " + tableToInsertInto);
-            
-            //StringConverter converter = new StringConverter(dateFormat, timeFormat, timestampFormat, timeZoneName, locale);
             ResultSetMetaData metaData = null;
             int countColumn = 0;
             String nameColumn = "";
-            String value = null;
+            String value = "";
+            String statementSQL = null;
             System.out.println("");
 
             //getting the headers and initialising them into the nameColumn variable
-            while(results.next()){
-
-                if(metaData == null){
-                    
+            while(results.next()){ //looping through all the rows
+                if(metaData == null){ //if metadata is null, go into the if statement
                     metaData = results.getMetaData(); //getting metadata
 				    countColumn = metaData.getColumnCount(); //getting our column count
                     //System.out.println(countColumn);
 
                     for (int i = 1; i <= countColumn; i++)
 					{
-                        nameColumn += metaData.getColumnName(i) + ",";
+                        nameColumn += metaData.getColumnName(i) + ","; //get all the column names
 					}
-                    nameColumn = nameColumn.substring(0, nameColumn.length() - 1);
-                    System.out.println("Column Names: " + nameColumn + "\n");
+                    nameColumn = nameColumn.substring(0, nameColumn.length() - 1); //trim the last comma
+                    System.out.println("Column Names: " + nameColumn + "\n"); //print out so we can see them
                 }
   
                 for(int i = 1; i <= countColumn; i++){
-                    if(type.equals("VARCHAR(64)")){
-                        value = value + results.getString(i) + ",";   
-                        //System.out.println(value);
+                    if(type.equals("VARCHAR(64)")){ //if type equals VARCHAR(64)
+                        value = value + results.getString(i) + ",";  //put the value in the string
                     } else {
-                        value = value + results.getString(i) + ",";
+                        value = value + results.getString(i) + ","; //put the value in the string but in an integer way
                         Integer integer = Integer.parseInt(value);
                         value = value + integer;
-
-                        //System.out.println(integer);
                     }
                 }
+                value = value.substring(0, value.lastIndexOf(",")); //trim the last comma
+                statementSQL = "INSERT OT IGNORE INTO " + tableToInsertInto + "(" + nameColumn + ") VALUES(" + value + ");\n"; //insert statements
+
+                value = ""; //reset value
+                result = result + statementSQL; //put all the statements in the return
             }
-
-            String statementSQL = "INSERT OT IGNORE INTO " + tableToInsertInto + "(" + nameColumn + ") VALUES(" + value + ");";
-            result = result + statementSQL;
-            System.out.println(result);
-
+            System.out.println(result); //print the statements
         } catch (Exception e) {
             System.out.println(e);
         }
-
-        return result;
+        return result; //return the insert statements
     }
 
     /*

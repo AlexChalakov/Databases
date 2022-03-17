@@ -10,8 +10,8 @@ CREATE TABLE S(
     r INTEGER,
     a DATE,
     g VARCHAR(64),
-    c_A,
-    c_K, 
+    c_A INTEGER,
+    c_K INTEGER, 
     PRIMARY KEY (r), 
     FOREIGN KEY(c_A) REFERENCES D(c), 
     FOREIGN KEY(c_K) REFERENCES D(c)

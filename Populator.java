@@ -8,12 +8,13 @@ import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+//import java.util.Locale;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 //https://github.com/simoc/csvjdbc
 import org.relique.jdbc.csv.CsvDriver;
-import org.relique.jdbc.csv.StringConverter;
+//import org.relique.jdbc.csv.StringConverter;
 
 /**
  * Class which needs to be modified in order to complete some of the later milestones
@@ -21,10 +22,10 @@ import org.relique.jdbc.csv.StringConverter;
 public class Populator {
 
     public static final boolean debug=false;
-    private static final String DEFAULT_DATE_FORMAT = "YYYY-MM-DD";
-    private static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
-    private static final String DEFAULT_TIMESTAMP_FORMAT = null;
-    private static final String DEFAULT_TIME_ZONE_NAME = "UTC";
+    //private static final String DEFAULT_DATE_FORMAT = "YYYY-MM-DD";
+    //private static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
+    //private static final String DEFAULT_TIMESTAMP_FORMAT = null;
+    //private static final String DEFAULT_TIME_ZONE_NAME = "UTC";
     //private static final char DEFAULT_QUOTECHAR = '"';
     //private static final String DEFAULT_SEPARATOR = ",";
     //private static final String DEFAULT_QUOTE_STYLE = "SQL";
@@ -33,6 +34,7 @@ public class Populator {
      * Constructor
      */
     public  Populator() {
+
 
     }
 
@@ -45,7 +47,7 @@ public class Populator {
         // calls to methods which will complete the database setup and data population
         Populator p = new Populator();
         p.setup("solution.sql");
-        p.milestone1("B.csv", "B");
+        p.milestone1("F.csv", "F");
         //p.milestone2("B.csv", "B", "output", false);
     }
 
@@ -68,15 +70,14 @@ public class Populator {
             //Character quoteChar = Character.valueOf(DEFAULT_QUOTECHAR);
             //String separator = DEFAULT_SEPARATOR;
             //String quoteStyle = DEFAULT_QUOTE_STYLE;
-            String dateFormat = DEFAULT_DATE_FORMAT;
+            /*String dateFormat = DEFAULT_DATE_FORMAT;
             String timeFormat = DEFAULT_TIME_FORMAT;
             String timestampFormat = DEFAULT_TIMESTAMP_FORMAT;
             String timeZoneName = DEFAULT_TIME_ZONE_NAME;
-            Locale locale = null;
+            Locale locale = null;*/
 
-            Populator populator=new Populator();
-            Connection csv = populator.csvConn();
-            
+            Connection csv = csvConn();
+            Connection sqliteConnection = sqliteConn();
 
             // get a list of tables and views
             System.out.println("List of table names based on CSV files");
@@ -92,7 +93,6 @@ public class Populator {
             // Create a Statement object to execute the query with.
             // A Statement is not thread-safe.
             Statement stmt = csv.createStatement();
-
             // Select the ID and NAME columns from sample.csv
             ResultSet results = stmt.executeQuery("SELECT * FROM " + tableToInsertInto);
             
@@ -100,13 +100,11 @@ public class Populator {
             // using CsvJdbc helper function
             boolean append = true;
 
-            StringConverter converter = new StringConverter(dateFormat, timeFormat, timestampFormat, timeZoneName, locale);
+            //StringConverter converter = new StringConverter(dateFormat, timeFormat, timestampFormat, timeZoneName, locale);
             ResultSetMetaData metaData = null;
             int countColumn = 0;
             String nameColumn = "";
-
             System.out.println("");
-            System.out.println("Init Testing");
 
             //getting the headers and initialising them into the nameColumn variable
             while(results.next()){
@@ -127,13 +125,61 @@ public class Populator {
                 }
             }
 
-            for (int i = 1; i <= countColumn; i++)
+            /**
+             * Getting table attributes.
+             * @author David Bowes
+             */
+            DatabaseMetaData metaDataSql = sqliteConnection.getMetaData();
+            
+            ResultSet ts = metaDataSql.getTables(null, null, "%", new String[] {"TABLE"});
+            while (ts.next()){
+                System.out.println(ts.getString(3));
+            }
+            
+            TreeMap<String, Attribute> arrayList = new TreeMap<>();
+            ResultSet resultSet = metaDataSql.getColumns(null, null, tableToInsertInto, null);
+            String name = null;
+            String type = null;
+            int size = 0;
+            while (resultSet.next()){
+                name = resultSet.getString("COLUMN_NAME");
+                type = resultSet.getString("TYPE_NAME");
+                size = resultSet.getInt("COLUMN_SIZE");
+                arrayList.put(name, new Attribute(name, type, size));
+            }
+
+            while(results.next()){
+                for(int i = 1; i <= countColumn; i++){
+                    String value = null;
+
+                    if(type.equals("VARCHAR(64")){
+                        value = results.getString(i);   
+                    
+                        System.out.println(value);
+                        if(value != null){
+                            System.out.println(value.getClass().getName());
+                        }
+                    } else if(type.equals("INTEGER")){
+                        value = results.getString(i);
+                        Integer integer = Integer.parseInt(value);
+
+                        System.out.println(integer);
+                        if(value != null){
+                            System.out.println(integer.getClass().getName());
+                        }
+                    } else {
+                        value = results.getString(i);
+                    }
+                }
+            }
+
+            /*for (int i = 1; i <= countColumn; i++)
 			{
 				String value = null;
                 //System.out.println("TESTING");
-                /*
-				 * Use same dateFormat, timeFormat and timestampFormat for output as the input CSV file.
-				 */
+                
+				//Use same dateFormat, timeFormat and timestampFormat for output as the input CSV file.
+				 
 				int columnType = metaData.getColumnType(i);
                 String columnTypeName = metaData.getColumnTypeName(i);
                 System.out.println(columnType);
@@ -149,15 +195,6 @@ public class Populator {
                         System.out.println(value.getClass().getName());
                     }
                         
-				}
-				else if (columnType == Types.TIME){
-					Time t = results.getTime(i);
-					if (t != null){
-						value = converter.formatTime(t);
-
-                        System.out.println(value);
-                        System.out.println(value.getClass().getName());
-                    }
 				}
                 else if (columnType == Types.INTEGER){
                     value = results.getString(i);
@@ -176,12 +213,32 @@ public class Populator {
                         System.out.println(value.getClass().getName());
                     }
                 }
-            }
+            }*/
         } catch (Exception e) {
             System.out.println(e);
         }
 
         return result;
+    }
+
+    /*
+     * @author David Bowes
+     */
+    static class Attribute implements Comparable<Attribute> {
+        final String name;
+        final String type;
+        final int size;
+
+        public Attribute(String name, String type, int size) {
+            this.name = name;
+            this.type = type;
+            this.size = size;
+        }
+
+        @Override
+        public int compareTo(Populator.Attribute arg0) {
+            return name.compareTo(arg0.name);
+        }
     }
 
     /**

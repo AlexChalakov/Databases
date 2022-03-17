@@ -135,7 +135,7 @@ public class Populator {
             while (ts.next()){
                 System.out.println(ts.getString(3));
             }
-            
+
             TreeMap<String, Attribute> arrayList = new TreeMap<>();
             ResultSet resultSet = metaDataSql.getColumns(null, null, tableToInsertInto, null);
             String name = null;
@@ -148,28 +148,27 @@ public class Populator {
                 arrayList.put(name, new Attribute(name, type, size));
             }
 
-            while(results.next()){
-                for(int i = 1; i <= countColumn; i++){
-                    String value = null;
+           
+            for(int i = 1; i <= countColumn; i++){
+                String value = null;
 
-                    if(type.equals("VARCHAR(64")){
-                        value = results.getString(i);   
+                if(type.equals("VARCHAR(64)")){
+                    value = results.getString(i);   
                     
-                        System.out.println(value);
-                        if(value != null){
-                            System.out.println(value.getClass().getName());
-                        }
-                    } else if(type.equals("INTEGER")){
-                        value = results.getString(i);
-                        Integer integer = Integer.parseInt(value);
-
-                        System.out.println(integer);
-                        if(value != null){
-                            System.out.println(integer.getClass().getName());
-                        }
-                    } else {
-                        value = results.getString(i);
+                    System.out.println(value);
+                    if(value != null){
+                        System.out.println(value.getClass().getName());
                     }
+                } else if(type.equals("INTEGER")){
+                    value = results.getString(i);
+                    Integer integer = Integer.parseInt(value);
+
+                    System.out.println(integer);
+                    if(value != null){
+                        System.out.println(integer.getClass().getName());
+                    }
+                } else {
+                    value = results.getString(i);
                 }
             }
 

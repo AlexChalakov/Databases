@@ -22,13 +22,6 @@ import org.relique.jdbc.csv.CsvDriver;
 public class Populator {
 
     public static final boolean debug=false;
-    //private static final String DEFAULT_DATE_FORMAT = "YYYY-MM-DD";
-    //private static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
-    //private static final String DEFAULT_TIMESTAMP_FORMAT = null;
-    //private static final String DEFAULT_TIME_ZONE_NAME = "UTC";
-    //private static final char DEFAULT_QUOTECHAR = '"';
-    //private static final String DEFAULT_SEPARATOR = ",";
-    //private static final String DEFAULT_QUOTE_STYLE = "SQL";
 
     /**
      * Constructor
@@ -64,18 +57,8 @@ public class Populator {
      */
     public String milestone1(String csvFileName, String tableToInsertInto) {
         String result = "";
-        // TODO
 
         try{
-            //Character quoteChar = Character.valueOf(DEFAULT_QUOTECHAR);
-            //String separator = DEFAULT_SEPARATOR;
-            //String quoteStyle = DEFAULT_QUOTE_STYLE;
-            /*String dateFormat = DEFAULT_DATE_FORMAT;
-            String timeFormat = DEFAULT_TIME_FORMAT;
-            String timestampFormat = DEFAULT_TIMESTAMP_FORMAT;
-            String timeZoneName = DEFAULT_TIME_ZONE_NAME;
-            Locale locale = null;*/
-
             Connection csv = csvConn();
             Connection sqliteConnection = sqliteConn();
 
@@ -90,47 +73,14 @@ public class Populator {
                 System.out.println(rs.getString("TABLE_NAME"));
             }
 
-            // Create a Statement object to execute the query with.
-            // A Statement is not thread-safe.
-            Statement stmt = csv.createStatement();
-            // Select the ID and NAME columns from sample.csv
-            ResultSet results = stmt.executeQuery("SELECT * FROM " + tableToInsertInto);
-            
-            // Dump out the results to a CSV file with the same format
-            // using CsvJdbc helper function
-            boolean append = true;
-
-            //StringConverter converter = new StringConverter(dateFormat, timeFormat, timestampFormat, timeZoneName, locale);
-            ResultSetMetaData metaData = null;
-            int countColumn = 0;
-            String nameColumn = "";
-            System.out.println("");
-
-            //getting the headers and initialising them into the nameColumn variable
-            while(results.next()){
-                if(metaData == null){
-                    
-                    metaData = results.getMetaData(); //getting metadata
-				    countColumn = metaData.getColumnCount(); //getting our column count
-                    //System.out.println(countColumn);
-
-                    for (int i = 0; i <= countColumn; i++)
-					{
-						if (i > 0){
-                            nameColumn += metaData.getColumnName(i) + ",";
-                        }
-					}
-                    nameColumn = nameColumn.substring(0, nameColumn.length() - 1);
-                    System.out.println("Column Names: " + nameColumn + "\n");
-                }
-            }
-
-            /**
+             /**
              * Getting table attributes.
              * @author David Bowes
              */
             DatabaseMetaData metaDataSql = sqliteConnection.getMetaData();
             
+            System.out.println("");
+            System.out.println("Actual list of tables in the SQLITE Database:");
             ResultSet ts = metaDataSql.getTables(null, null, "%", new String[] {"TABLE"});
             while (ts.next()){
                 System.out.println(ts.getString(3));
@@ -140,79 +90,60 @@ public class Populator {
             ResultSet resultSet = metaDataSql.getColumns(null, null, tableToInsertInto, null);
             String name = null;
             String type = null;
-            int size = 0;
             while (resultSet.next()){
                 name = resultSet.getString("COLUMN_NAME");
                 type = resultSet.getString("TYPE_NAME");
-                size = resultSet.getInt("COLUMN_SIZE");
-                arrayList.put(name, new Attribute(name, type, size));
+                arrayList.put(name, new Attribute(name, type));
             }
 
-           
-            for(int i = 1; i <= countColumn; i++){
-                String value = null;
+            // Create a Statement object to execute the query with.
+            // A Statement is not thread-safe.
+            Statement stmt = csv.createStatement();
+            // Select the ID and NAME columns from sample.csv
+            ResultSet results = stmt.executeQuery("SELECT * FROM " + tableToInsertInto);
+            
+            //StringConverter converter = new StringConverter(dateFormat, timeFormat, timestampFormat, timeZoneName, locale);
+            ResultSetMetaData metaData = null;
+            int countColumn = 0;
+            String nameColumn = "";
+            String value = null;
+            System.out.println("");
 
-                if(type.equals("VARCHAR(64)")){
-                    value = results.getString(i);   
+            //getting the headers and initialising them into the nameColumn variable
+            while(results.next()){
+
+                if(metaData == null){
                     
-                    System.out.println(value);
-                    if(value != null){
-                        System.out.println(value.getClass().getName());
-                    }
-                } else if(type.equals("INTEGER")){
-                    value = results.getString(i);
-                    Integer integer = Integer.parseInt(value);
+                    metaData = results.getMetaData(); //getting metadata
+				    countColumn = metaData.getColumnCount(); //getting our column count
+                    //System.out.println(countColumn);
 
-                    System.out.println(integer);
-                    if(value != null){
-                        System.out.println(integer.getClass().getName());
+                    for (int i = 1; i <= countColumn; i++)
+					{
+                        nameColumn += metaData.getColumnName(i) + ",";
+					}
+                    nameColumn = nameColumn.substring(0, nameColumn.length() - 1);
+                    System.out.println("Column Names: " + nameColumn + "\n");
+                }
+  
+                for(int i = 1; i <= countColumn; i++){
+                    if(type.equals("VARCHAR(64)")){
+                        value = value + results.getString(i) + ",";   
+                        //System.out.println(value);
+                    } else {
+                        value = value + results.getString(i) + ",";
+                        Integer integer = Integer.parseInt(value);
+                        value = value + integer;
+
+                        //System.out.println(integer);
                     }
-                } else {
-                    value = results.getString(i);
                 }
             }
 
-            /*for (int i = 1; i <= countColumn; i++)
-			{
-				String value = null;
-                //System.out.println("TESTING");
-                
-				//Use same dateFormat, timeFormat and timestampFormat for output as the input CSV file.
-				 
-				int columnType = metaData.getColumnType(i);
-                String columnTypeName = metaData.getColumnTypeName(i);
-                System.out.println(columnType);
-                System.out.println(columnTypeName);
+            String statementSQL = "INSERT OT IGNORE INTO " + tableToInsertInto + "(" + nameColumn + ") VALUES(" + value + ");";
+            result = result + statementSQL;
+            System.out.println(result);
 
-				if (columnType == Types.DATE){
-					Date d = results.getDate(i);
-                    java.sql.Date sDate = new java.sql.Date(d.getTime());
-					if (sDate != null){
-						value = converter.formatDate(sDate);
-
-                        System.out.println(value);
-                        System.out.println(value.getClass().getName());
-                    }
-                        
-				}
-                else if (columnType == Types.INTEGER){
-                    value = results.getString(i);
-                    Integer integer = Integer.parseInt(value);
-
-                    System.out.println(integer);
-                    if(value != null){
-                        System.out.println(integer.getClass().getName());
-                    }
-                }
-                else if (columnType == Types.VARCHAR){
-                    value = results.getString(i);   
-                    
-                    System.out.println(value);
-                    if(value != null){
-                        System.out.println(value.getClass().getName());
-                    }
-                }
-            }*/
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -226,12 +157,10 @@ public class Populator {
     static class Attribute implements Comparable<Attribute> {
         final String name;
         final String type;
-        final int size;
 
-        public Attribute(String name, String type, int size) {
+        public Attribute(String name, String type) {
             this.name = name;
             this.type = type;
-            this.size = size;
         }
 
         @Override

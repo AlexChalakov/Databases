@@ -12,7 +12,7 @@ CREATE TABLE S(
     g VARCHAR(64),
     c_A INTEGER,
     c_K INTEGER, 
-    PRIMARY KEY (r), 
+    PRIMARY KEY(r), 
     FOREIGN KEY(c_A) REFERENCES D(c), 
     FOREIGN KEY(c_K) REFERENCES D(c)
     ); /* language.csv - correct*/
@@ -43,7 +43,8 @@ CREATE TABLE R(
     r INTEGER, 
     q VARCHAR(64), 
     p VARCHAR(64), 
-    c INTEGER, 
+    c INTEGER,
+    PRIMARY KEY(r,c),
     FOREIGN KEY(r) REFERENCES S(r), 
     FOREIGN KEY(c) REFERENCES D(c)
     ); /*missions.csv - correct*/
@@ -56,7 +57,8 @@ CREATE TABLE T(
 
 CREATE TABLE G(
     i VARCHAR(64), 
-    r INTEGER, 
+    r INTEGER,
+    PRIMARY KEY(i,r),
     FOREIGN KEY(i) REFERENCES B(i), 
     FOREIGN KEY(r) REFERENCES S(r)
     ); /*correct - check for primary keys, put both i and r together as one*/
@@ -65,6 +67,7 @@ CREATE TABLE H(
     c INTEGER, 
     t VARCHAR(64), 
     r INTEGER,
+    PRIMARY KEY(c,t,r),
     FOREIGN KEY(c) REFERENCES D(c),
     FOREIGN KEY(t) REFERENCES T(t),
     FOREIGN KEY(r) REFERENCES S(r)
@@ -72,14 +75,16 @@ CREATE TABLE H(
 
 CREATE TABLE C(
     h VARCHAR(64), 
-    i VARCHAR(64), 
+    i VARCHAR(64),
+    PRIMARY KEY(h,i),
     FOREIGN KEY(h) REFERENCES L(h), 
     FOREIGN KEY(i) REFERENCES B(i)
     ); /*correct*/
 
 CREATE TABLE I(
     c INTEGER, 
-    i VARCHAR(64), 
+    i VARCHAR(64),
+    PRIMARY KEY(c,i),
     FOREIGN KEY(c) REFERENCES D(c), 
     FOREIGN KEY(i) REFERENCES B(i)
     ); /*correct*/

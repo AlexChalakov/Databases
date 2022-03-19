@@ -1,45 +1,45 @@
-CREATE TABLE D(
+CREATE TABLE D( --planets
     c INTEGER, 
     d VARCHAR(64), 
-    e INTEGER, 
+    e INTEGER, --number of people living on the planet
     PRIMARY KEY(c)
-    ); /* persons.cvs - correct*/
+    ); 
 
-CREATE TABLE S(
-    j INTEGER,
+CREATE TABLE S( --person
+    j INTEGER, --age
     r INTEGER,
-    a DATE,
+    a DATE, --date of birth
     g VARCHAR(64),
-    c_A INTEGER,
-    c_K INTEGER, 
+    c_A INTEGER, --LIVES ON
+    c_K INTEGER, --BORN ON
     PRIMARY KEY(r), 
-    FOREIGN KEY(c_A) REFERENCES D(c), 
-    FOREIGN KEY(c_K) REFERENCES D(c)
-    ); /* language.csv - correct*/
+    FOREIGN KEY(c_A) REFERENCES D(c), --LIVES ON
+    FOREIGN KEY(c_K) REFERENCES D(c)  --BORN ON
+    ); 
 
-CREATE TABLE F(
+CREATE TABLE F( --powers
     r INTEGER, 
     b INTEGER, 
     f VARCHAR(64), 
     PRIMARY KEY(b,f), 
     FOREIGN KEY(r) REFERENCES S(r)
-    ); /*planets.cvs -  correct - check for Q_r*/
+    ); 
 
-CREATE TABLE B(
+CREATE TABLE B( --languages
     i VARCHAR(64), 
     l VARCHAR(64), 
     PRIMARY KEY(i)
-    ); /*heroes.csv - correct*/
+    ); 
 
-CREATE TABLE L(
-    c VARCHAR(64), 
+CREATE TABLE L( --missions
+    c INTEGER, --was varchar but because of majority
     h VARCHAR(64), 
     u TEXT, 
     PRIMARY KEY(h), 
     FOREIGN KEY(c) REFERENCES D(c)
-    ); /*powers.csv - correct*/
+    ); 
 
-CREATE TABLE R(
+CREATE TABLE R( --heroes
     r INTEGER, 
     q VARCHAR(64), 
     p VARCHAR(64), 
@@ -47,13 +47,13 @@ CREATE TABLE R(
     PRIMARY KEY(r,c),
     FOREIGN KEY(r) REFERENCES S(r), 
     FOREIGN KEY(c) REFERENCES D(c)
-    ); /*missions.csv - correct*/
+    ); 
 
 CREATE TABLE T(
     t VARCHAR(64), 
     k VARCHAR(64), 
     PRIMARY KEY(t)
-    ); /*correct check if its actually varchar*/
+    );
 
 CREATE TABLE G(
     i VARCHAR(64), 
@@ -131,34 +131,34 @@ INSERT INTO R(r,q,p,c) VALUES (36,'Pol Krinn ','Magnetic Kid ',4);
 
 /*CREATING INDEXES*/
 
-CREATE UNIQUE INDEX IF NOT EXISTS persons_idx ON D(c asc);   --WHERE c IS NOT NULL;
-CREATE UNIQUE INDEX IF NOT EXISTS language_idx ON S(r asc,j,g); --WHERE r IS NOT NULL;
-CREATE UNIQUE INDEX IF NOT EXISTS planets_idx ON F(b asc); --WHERE b IS NOT NULL;
-CREATE UNIQUE INDEX IF NOT EXISTS heroes_idx ON B(i asc); --WHERE i IS NOT NULL;
-CREATE UNIQUE INDEX IF NOT EXISTS powers_idx ON L(h asc); --WHERE h IS NOT NULL;
-CREATE UNIQUE INDEX IF NOT EXISTS missions_idx ON R(r asc); --WHERE r IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS planets_idx ON D(c asc);   --WHERE c IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS person_idx ON S(r asc,j,g); --WHERE r IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS powers_idx ON F(b asc); --WHERE b IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS languages_idx ON B(i asc); --WHERE i IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS missions_idx ON L(h asc); --WHERE h IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS heroes_idx ON R(r asc); --WHERE r IS NOT NULL;
 
 CREATE VIEW [hero] as 
-SELECT *, 'q ' as secretIdentity from 'S '
-natural join 'R';
+SELECT *, q as secretIdentity from S 
+natural join R;
 
 CREATE VIEW [speaks] as 
-SELECT * from 'S ' 
-natural join 'G ' 
-natural join 'R ';
+SELECT * from S 
+natural join G 
+natural join R;
 
 CREATE VIEW [person_job] as
-SELECT * from 'S '
-natural join 'D '
-natural join 'T '
-natural join 'H ';
+SELECT * from S
+natural join D
+natural join T
+natural join H;
 
 CREATE VIEW [hero_mission] as
-SELECT * from 'R '
-natural join 'L '
-natural join 'E ';
+SELECT * from R
+natural join L
+natural join E;
 
 CREATE VIEW [JuniorHERO] as 
-SELECT * , 'q ' as secretIdentity from 'S ' 
-natural join 'R ' 
-where 'S '. 'j ' <21;
+SELECT * , q as secretIdentity from S  
+natural join R 
+where S. j <21;

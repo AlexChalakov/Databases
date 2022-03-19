@@ -268,7 +268,12 @@ public class Populator {
      */
     public void updateAllAges(){
         // TODO
-
+        String sqlstmt = "UPDATE 'S ' SET 'j '= (strftime ('% Y ' , ' now ') - strftime ('% Y ' , 'a ')) - (strftime ('%m -% d ' , ' now ') < strftime ( '%m -% d ' , 'a '))";
+        try{
+            exec(sqlstmt);
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -279,8 +284,17 @@ public class Populator {
      * 
      */
     public void updateCensus(){
-        // TODO
+        // TODO 
+        String sqlstmtCensus = "UPDATE D SET e = (COUNT(c_A) FROM S GROUP BY (S.c_A)) WHERE S.j BETWEEN 0 and 99;"; //S.j< 100 AND S.j > 0
+        try{
+            Connection sqlite = sqliteConn();
+            Statement stmt = sqlite.createStatement();
+            ResultSet resultSet = stmt.executeQuery("SELECT * FROM D;");
 
+            exec(sqlstmtCensus);
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -596,6 +610,17 @@ public class Populator {
      */
     public void changeHomePlanet(int i, String planetName) throws UnknownPlanetException,UnknownPersonException{
         // TODO
+        String sqlstmtHome = "UPDATE S SET c_A = '" + planetName + "' FROM S WHERE r = " + i + " ;";
+        try{
+            Connection sqlite = sqliteConn();
+            Statement stmt = sqlite.createStatement();
+            String sql = "SELECT c FROM D WHERE d = " + planetName +";";
+            ResultSet resultSet = stmt.executeQuery(sql);
+
+            exec(sqlstmtHome);
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -606,6 +631,16 @@ public class Populator {
     public long populationOf(String planetName) throws UnknownPlanetException{
         long result=-1;
         // TODO
+        String sqlstmt = "SELECT e FROM D WHERE d = " + planetName + ";";
+        try{
+            Connection sqlite = sqliteConn();
+            Statement stmt = sqlite.createStatement();
+            ResultSet resultSet = stmt.executeQuery(sqlstmt);
+
+        } catch (SQLException e){
+            e.printStackTrace();
+
+        }
         return result;
     }
 

@@ -131,9 +131,34 @@ INSERT INTO R(r,q,p,c) VALUES (36,'Pol Krinn ','Magnetic Kid ',4);
 
 /*CREATING INDEXES*/
 
-CREATE UNIQUE INDEX IF NOT EXISTS d_idx ON D(c asc) WHERE c IS NOT NULL;
-CREATE UNIQUE INDEX IF NOT EXISTS s_idx ON S(r asc) WHERE r IS NOT NULL;
-CREATE UNIQUE INDEX IF NOT EXISTS f_idx ON F(b asc) WHERE b IS NOT NULL;
-CREATE UNIQUE INDEX IF NOT EXISTS b_idx ON B(i asc) WHERE i IS NOT NULL;
-CREATE UNIQUE INDEX IF NOT EXISTS l_idx ON L(h asc) WHERE h IS NOT NULL;
-CREATE UNIQUE INDEX IF NOT EXISTS r_idx ON R(r asc) WHERE r IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS persons_idx ON D(c asc);   --WHERE c IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS language_idx ON S(r asc,j,g); --WHERE r IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS planets_idx ON F(b asc); --WHERE b IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS heroes_idx ON B(i asc); --WHERE i IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS powers_idx ON L(h asc); --WHERE h IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS missions_idx ON R(r asc); --WHERE r IS NOT NULL;
+
+CREATE VIEW [hero] as 
+SELECT *, 'q ' as secretIdentity from 'S '
+natural join 'R';
+
+CREATE VIEW [speaks] as 
+SELECT * from 'S ' 
+natural join 'G ' 
+natural join 'R ';
+
+CREATE VIEW [person_job] as
+SELECT * from 'S '
+natural join 'D '
+natural join 'T '
+natural join 'H ';
+
+CREATE VIEW [hero_mission] as
+SELECT * from 'R '
+natural join 'L '
+natural join 'E ';
+
+CREATE VIEW [JuniorHERO] as 
+SELECT * , 'q ' as secretIdentity from 'S ' 
+natural join 'R ' 
+where 'S '. 'j ' <21;

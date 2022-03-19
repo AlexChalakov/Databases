@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.junit.platform.commons.util.StringUtils;
 //https://github.com/simoc/csvjdbc
 import org.relique.jdbc.csv.CsvDriver;
 
@@ -39,7 +38,7 @@ public class Populator {
         // calls to methods which will complete the database setup and data population
         Populator p = new Populator();
         p.setup("solution.sql");
-        p.milestone1("F.csv", "F");
+        p.milestone1("f.csv", "f");
         //p.milestone2("B.csv", "B", "output", false);
     }
 
@@ -57,72 +56,8 @@ public class Populator {
     public String milestone1(String csvFileName, String tableToInsertInto) {
         String result = "";
 
-        try{
-            Connection csv = csvConn();
-            Connection sqliteConnection = sqliteConn();
+        result = insertCSVData(csvFileName, tableToInsertInto);
 
-             /**
-             * Getting table attributes.
-             * @author David Bowes
-             */
-            DatabaseMetaData metaDataSql = sqliteConnection.getMetaData();
-            TreeMap<String, Attribute> arrayList = new TreeMap<>();
-            ResultSet resultSet = metaDataSql.getColumns(null, null, tableToInsertInto, null);
-            String name = null;
-            String type = null;
-            while (resultSet.next()){
-                name = resultSet.getString("COLUMN_NAME");
-                type = resultSet.getString("TYPE_NAME");
-                arrayList.put(name, new Attribute(name, type));
-            }
-
-            // Create a Statement object to execute the query with.
-            // A Statement is not thread-safe.
-            Statement stmt = csv.createStatement();
-
-            // Declare all the needed variables
-            ResultSet results = stmt.executeQuery("SELECT * FROM " + tableToInsertInto);
-            ResultSetMetaData metaData = null;
-            int countColumn = 0;
-            String nameColumn = "";
-            String value = "";
-            String statementSQL = null;
-            System.out.println("");
-
-            //getting the headers and initialising them into the nameColumn variable
-            while(results.next()){ //looping through all the rows
-                if(metaData == null){ //if metadata is null, go into the if statement
-                    metaData = results.getMetaData(); //getting metadata
-				    countColumn = metaData.getColumnCount(); //getting our column count
-                    //System.out.println(countColumn);
-
-                    for (int i = 1; i <= countColumn; i++)
-					{
-                        nameColumn += metaData.getColumnName(i) + ","; //get all the column names
-					}
-                    nameColumn = nameColumn.substring(0, nameColumn.length() - 1); //trim the last comma
-                    System.out.println("Column Names: " + nameColumn + "\n"); //print out so we can see them
-                }
-  
-                for(int i = 1; i <= countColumn; i++){
-                    if(type.equals("VARCHAR(64)")){ //if type equals VARCHAR(64)
-                        value = value + results.getString(i) + ",";  //put the value in the string
-                    } else {
-                        value = value + results.getString(i) + ","; //put the value in the string but in an integer way
-                        Integer integer = Integer.parseInt(value);
-                        value = value + integer;
-                    }
-                }
-                value = value.substring(0, value.lastIndexOf(",")); //trim the last comma
-                statementSQL = "INSERT OT IGNORE INTO " + tableToInsertInto + "(" + nameColumn + ") VALUES(" + value + ");\n"; //insert statements
-
-                value = ""; //reset value
-                result = result + statementSQL; //put all the statements in the return
-            }
-            System.out.println(result); //print the statements
-        } catch (Exception e) {
-            System.out.println(e);
-        }
         return result; //return the insert statements
     }
 
@@ -200,8 +135,74 @@ public class Populator {
      */
     public String insertCSVData(String csvFileName, String primaryTableToInsertInto) {
         String result = "";
-        // TODO
-        return result;
+
+        try{
+            Connection csv = csvConn();
+            Connection sqliteConnection = sqliteConn();
+
+             /**
+             * Getting table attributes.
+             * @author David Bowes
+             */
+            DatabaseMetaData metaDataSql = sqliteConnection.getMetaData();
+            TreeMap<String, Attribute> arrayList = new TreeMap<>();
+            ResultSet resultSet = metaDataSql.getColumns(null, null, primaryTableToInsertInto, null);
+            String name = null;
+            String type = null;
+            while (resultSet.next()){
+                name = resultSet.getString("COLUMN_NAME");
+                type = resultSet.getString("TYPE_NAME");
+                arrayList.put(name, new Attribute(name, type));
+            }
+
+            // Create a Statement object to execute the query with.
+            // A Statement is not thread-safe.
+            Statement stmt = csv.createStatement();
+
+            // Declare all the needed variables
+            ResultSet results = stmt.executeQuery("SELECT * FROM " + primaryTableToInsertInto);
+            ResultSetMetaData metaData = null;
+            int countColumn = 0;
+            String nameColumn = "";
+            String value = "";
+            String statementSQL = null;
+            System.out.println("");
+
+            //getting the headers and initialising them into the nameColumn variable
+            while(results.next()){ //looping through all the rows
+                if(metaData == null){ //if metadata is null, go into the if statement
+                    metaData = results.getMetaData(); //getting metadata
+				    countColumn = metaData.getColumnCount(); //getting our column count
+                    //System.out.println(countColumn);
+
+                    for (int i = 1; i <= countColumn; i++)
+					{
+                        nameColumn += metaData.getColumnName(i) + ","; //get all the column names
+					}
+                    nameColumn = nameColumn.substring(0, nameColumn.length() - 1); //trim the last comma
+                    System.out.println("Column Names: " + nameColumn + "\n"); //print out so we can see them
+                }
+  
+                for(int i = 1; i <= countColumn; i++){
+                    if(type.equals("VARCHAR(64)")){ //if type equals VARCHAR(64)
+                        value = value + results.getString(i) + ",";  //put the value in the string
+                    } else {
+                        value = value + results.getString(i) + ","; //put the value in the string but in an integer way
+                        Integer integer = Integer.parseInt(value);
+                        value = value + integer;
+                    }
+                }
+                value = value.substring(0, value.lastIndexOf(",")); //trim the last comma
+                statementSQL = "INSERT OT IGNORE INTO " + primaryTableToInsertInto + "(" + nameColumn + ") VALUES(" + value + ");\n"; //insert statements
+
+                value = ""; //reset value
+                result = result + statementSQL; //put all the statements in the return
+            }
+            System.out.println(result); //print the statements
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return result; //return the insert statements
     }
 
     /**

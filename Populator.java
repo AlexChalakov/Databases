@@ -285,13 +285,22 @@ public class Populator {
      */
     public void updateCensus(){
         // TODO 
-        String sqlstmtCensus = "UPDATE D SET e = (COUNT(c_A) FROM S GROUP BY (S.c_A)) WHERE S.j BETWEEN 0 and 99;"; //S.j< 100 AND S.j > 0
+        String sqlstmtCensus = "SELECT COUNT(c_A) as c FROM S WHERE S.j BETWEEN 0 and 99;"; //S.j< 100 AND S.j > 0
         try{
             Connection sqlite = sqliteConn();
             Statement stmt = sqlite.createStatement();
-            ResultSet resultSet = stmt.executeQuery("SELECT * FROM D;");
+            ResultSet resultSet = stmt.executeQuery("SELECT e FROM D;");
+            ResultSet population;
+            String sqlUpdate = "";
 
-            exec(sqlstmtCensus);
+            while(resultSet.next()){
+                //exec(sqlstmtCensus);
+                population = sqlite.createStatement().executeQuery(sqlstmtCensus);
+                population.next();
+                sqlUpdate += "UPDATE D SET c = " + population.getInt("e") + " WHERE e = " + resultSet.getString("e") + ";";
+            }
+            
+            exec(sqlUpdate);
         } catch (SQLException e){
             e.printStackTrace();
         }

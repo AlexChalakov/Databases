@@ -261,7 +261,7 @@ public class PopulatorTest {
                     .atZone(ZoneId.systemDefault())
                     .toLocalDate();
             Period period = Period.between(dob, LocalDate.now());
-            assertNotEquals(period.getYears(), rs.getInt("j"));
+            assertEquals(period.getYears(), rs.getInt("j"));
         }
     }
 

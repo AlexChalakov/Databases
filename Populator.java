@@ -38,8 +38,18 @@ public class Populator {
         // calls to methods which will complete the database setup and data population
         Populator p = new Populator();
         p.setup("solution.sql");
-        p.milestone1("f.csv", "f");
+        //p.milestone1("F.csv", "F");
+        p.updateCensus();
+        p.changeHomePlanet(1, "Pluto");
+        p.updateCensus();
+        p.populationOf("Pluto");
+        p.changeHomePlanet(1, "Pluto");
+        p.updateCensus();
+        p.changeHomePlanet(1, "Earth");
+        p.updateCensus();
+        p.populationOf("Pluto");
         //p.milestone2("B.csv", "B", "output", false);
+        p.listSuperHeroesContainingPower("covid");
     }
 
     /**
@@ -285,22 +295,22 @@ public class Populator {
      */
     public void updateCensus(){
         // TODO 
-        String sqlstmtCensus = "SELECT COUNT(c_A) as c FROM S WHERE S.j BETWEEN 0 and 99;"; //S.j< 100 AND S.j > 0
         try{
             Connection sqlite = sqliteConn();
             Statement stmt = sqlite.createStatement();
-            ResultSet resultSet = stmt.executeQuery("SELECT e FROM D;");
-            ResultSet population;
+            ResultSet resultSet = stmt.executeQuery("SELECT D.c, COUNT(S.c_A) FROM S INNER JOIN D ON S.c_A = D.c WHERE S.j BETWEEN 0 and 99 GROUP BY D.c");
+            ResultSetMetaData metaData = null;
             String sqlUpdate = "";
 
             while(resultSet.next()){
-                //exec(sqlstmtCensus);
-                population = sqlite.createStatement().executeQuery(sqlstmtCensus);
-                population.next();
-                sqlUpdate += "UPDATE D SET c = " + population.getInt("e") + " WHERE e = " + resultSet.getString("e") + ";";
+                if(metaData == null){
+                    metaData = resultSet.getMetaData();
+                }
+
+                sqlUpdate = "UPDATE D SET e = " + resultSet.getInt(2) + " WHERE c = " + resultSet.getInt(1) + ";\n";
+                exec(sqlUpdate);
+                System.out.println(sqlUpdate);
             }
-            
-            exec(sqlUpdate);
         } catch (SQLException e){
             e.printStackTrace();
         }
@@ -334,12 +344,31 @@ public class Populator {
     public List<String> listSuperHeroesContainingPower(String txt){
         List<String> result=new ArrayList<>();
         // TODO
+        //R TABLE
+        try{
+            Connection sqlite = sqliteConn();
+            Statement stmt = sqlite.createStatement();
+            //ResultSet resultSet = stmt.executeQuery("SELECT G.h FROM G INNER JOIN S ON G.p = S.p WHERE S.r LIKE '%" + txt + "%';");
+            ResultSet resultSet = stmt.executeQuery("SELECT R.q FROM R INNER JOIN F ON R.r = F.r WHERE F.f LIKE '%" + txt + "%';");
+            ResultSetMetaData metaData = null;
+
+            while(resultSet.next()){
+                if(metaData == null){
+                    metaData = resultSet.getMetaData();
+                }
+                result.add(resultSet.getString(1));
+            }
+            System.out.println(result);
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
         return result;
     }
 
     public TreeSet<String> entityAttributes(String entityName){
         TreeSet<String> result=new TreeSet<>();
         // TODO
+
         return result;
     }
 
@@ -619,14 +648,27 @@ public class Populator {
      */
     public void changeHomePlanet(int i, String planetName) throws UnknownPlanetException,UnknownPersonException{
         // TODO
-        String sqlstmtHome = "UPDATE S SET c_A = '" + planetName + "' FROM S WHERE r = " + i + " ;";
         try{
             Connection sqlite = sqliteConn();
             Statement stmt = sqlite.createStatement();
-            String sql = "SELECT c FROM D WHERE d = " + planetName +";";
+            String sql = "SELECT c FROM D WHERE d = '" + planetName +"';";
             ResultSet resultSet = stmt.executeQuery(sql);
+            ResultSetMetaData metaData = null;
+            String sqlstmtHome = "";
 
+            /*while(resultSet.next()){
+                if(metaData == null){
+                    metaData = resultSet.getMetaData();
+                }
+
+                sqlstmtHome = "UPDATE S SET c_A = " + resultSet.getInt(1) + " WHERE r = " + i + ";\n";
+                exec(sqlstmtHome);
+                System.out.println(sqlstmtHome);
+            }*/
+
+            sqlstmtHome = "UPDATE S SET c_A = " + resultSet.getInt(1) + " WHERE r = " + i + ";\n";
             exec(sqlstmtHome);
+            System.out.println(sqlstmtHome);
         } catch (SQLException e){
             e.printStackTrace();
         }
@@ -640,12 +682,20 @@ public class Populator {
     public long populationOf(String planetName) throws UnknownPlanetException{
         long result=-1;
         // TODO
-        String sqlstmt = "SELECT e FROM D WHERE d = " + planetName + ";";
+        String sqlstmt = "SELECT e FROM D WHERE d = '" + planetName + "';";
         try{
             Connection sqlite = sqliteConn();
             Statement stmt = sqlite.createStatement();
             ResultSet resultSet = stmt.executeQuery(sqlstmt);
+            ResultSetMetaData metaData = null;
+            while(resultSet.next()){
+                if(metaData == null){
+                    metaData = resultSet.getMetaData();
+                }
 
+                result = resultSet.getInt(1);
+                System.out.println(result);
+            }
         } catch (SQLException e){
             e.printStackTrace();
 

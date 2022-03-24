@@ -101,7 +101,7 @@ INSERT INTO S(j,r,a,g,c_A) VALUES (22,1,2000-01-01,'Alex Chal ',1);
 INSERT INTO S(j,r,a,g,c_A) VALUES (22,45,2000-01-01,'Lincoln ',2);
 
 INSERT INTO R(r,q,p,c) VALUES (1,'Alex C ','Rockstar ',69);
-INSERT OR IGNORE INTO F(b,r,f) VALUES( 10101, 1, 'covid triple boosted' );
+--INSERT OR IGNORE INTO F(b,r,f) VALUES( 10101, 1, 'covid triple boosted' );
 
 -- INSERT INTO D(c,d,e) VALUES (11,'Hyrakius',NULL);
 -- INSERT INTO D(c,d,e) VALUES (2,'Bgztl',8);

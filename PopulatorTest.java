@@ -285,6 +285,7 @@ public class PopulatorTest {
     @Test
     public void checkListSuperHeroPowers() throws SQLException {
         String sql = "INSERT OR IGNORE INTO F(b,r,f) VALUES( 10101, 1, 'covid triple boosted' );";
+        instance.exec(sql);
         List<String> x = instance.listSuperHeroesContainingPower("covid");
         assertTrue(x.size() > 0);
         assertTrue(x.size() == 1);

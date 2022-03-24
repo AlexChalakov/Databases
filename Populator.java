@@ -49,7 +49,7 @@ public class Populator {
         p.updateCensus();
         p.populationOf("Pluto");
         //p.milestone2("B.csv", "B", "output", false);
-        p.listSuperHeroesContainingPower("covid");
+        //p.listSuperHeroesContainingPower("covid");
     }
 
     /**
@@ -278,7 +278,7 @@ public class Populator {
      */
     public void updateAllAges(){
         // TODO
-        String sqlstmt = "UPDATE 'S ' SET 'j '= (strftime ('% Y ' , ' now ') - strftime ('% Y ' , 'a ')) - (strftime ('%m -% d ' , ' now ') < strftime ( '%m -% d ' , 'a '))";
+        String sqlstmt = "UPDATE 'S ' SET 'j '= (strftime ('% Y ' , ' now ') - strftime ('% Y ' , a )) - (strftime ('%m -% d ' , ' now ') < strftime ( '%m -% d ' , a ))";
         try{
             exec(sqlstmt);
         } catch (SQLException e){
@@ -297,20 +297,8 @@ public class Populator {
         // TODO 
         try{
             Connection sqlite = sqliteConn();
-            Statement stmt = sqlite.createStatement();
-            ResultSet resultSet = stmt.executeQuery("SELECT D.c, COUNT(S.c_A) FROM S INNER JOIN D ON S.c_A = D.c WHERE S.j BETWEEN 0 and 99 GROUP BY D.c");
-            ResultSetMetaData metaData = null;
-            String sqlUpdate = "";
-
-            while(resultSet.next()){
-                if(metaData == null){
-                    metaData = resultSet.getMetaData();
-                }
-
-                sqlUpdate = "UPDATE D SET e = " + resultSet.getInt(2) + " WHERE c = " + resultSet.getInt(1) + ";\n";
-                exec(sqlUpdate);
-                System.out.println(sqlUpdate);
-            }
+            PreparedStatement st = sqlite.prepareStatement("UPDATE D SET e = (SELECT COUNT(S.c_A) FROM S WHERE S.c_A = D.c AND S.j BETWEEN 0 AND 99);");
+            st.executeUpdate();
         } catch (SQLException e){
             e.printStackTrace();
         }
@@ -348,7 +336,6 @@ public class Populator {
         try{
             Connection sqlite = sqliteConn();
             Statement stmt = sqlite.createStatement();
-            //ResultSet resultSet = stmt.executeQuery("SELECT G.h FROM G INNER JOIN S ON G.p = S.p WHERE S.r LIKE '%" + txt + "%';");
             ResultSet resultSet = stmt.executeQuery("SELECT R.q FROM R INNER JOIN F ON R.r = F.r WHERE F.f LIKE '%" + txt + "%';");
             ResultSetMetaData metaData = null;
 
@@ -653,18 +640,7 @@ public class Populator {
             Statement stmt = sqlite.createStatement();
             String sql = "SELECT c FROM D WHERE d = '" + planetName +"';";
             ResultSet resultSet = stmt.executeQuery(sql);
-            ResultSetMetaData metaData = null;
             String sqlstmtHome = "";
-
-            /*while(resultSet.next()){
-                if(metaData == null){
-                    metaData = resultSet.getMetaData();
-                }
-
-                sqlstmtHome = "UPDATE S SET c_A = " + resultSet.getInt(1) + " WHERE r = " + i + ";\n";
-                exec(sqlstmtHome);
-                System.out.println(sqlstmtHome);
-            }*/
 
             sqlstmtHome = "UPDATE S SET c_A = " + resultSet.getInt(1) + " WHERE r = " + i + ";\n";
             exec(sqlstmtHome);

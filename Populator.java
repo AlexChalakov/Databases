@@ -38,16 +38,21 @@ public class Populator {
         // calls to methods which will complete the database setup and data population
         Populator p = new Populator();
         p.setup("solution.sql");
-        //p.milestone1("F.csv", "F");
-        p.updateCensus();
-        p.changeHomePlanet(1, "Pluto");
-        p.updateCensus();
-        p.populationOf("Pluto");
-        p.changeHomePlanet(1, "Pluto");
-        p.updateCensus();
-        p.changeHomePlanet(1, "Earth");
-        p.updateCensus();
-        p.populationOf("Pluto");
+        p.milestone1("L.csv", "L");
+        p.milestone1("F.csv", "F");
+        p.milestone1("D.csv", "D");
+        p.milestone1("R.csv", "R");
+        p.milestone1("S.csv", "S");
+        p.milestone1("B.csv", "B");
+        //p.updateCensus();
+        //p.changeHomePlanet(1, "Pluto");
+        //p.updateCensus();
+        //p.populationOf("Pluto");
+        //p.changeHomePlanet(1, "Pluto");
+        //p.updateCensus();
+        //p.changeHomePlanet(1, "Earth");
+        //p.updateCensus();
+        //p.populationOf("Pluto");
         //p.milestone2("B.csv", "B", "output", false);
         //p.listSuperHeroesContainingPower("covid");
     }
@@ -154,7 +159,7 @@ public class Populator {
              * Getting table attributes.
              * @author David Bowes
              */
-            DatabaseMetaData metaDataSql = sqliteConnection.getMetaData();
+            /*DatabaseMetaData metaDataSql = sqliteConnection.getMetaData();
             TreeMap<String, Attribute> arrayList = new TreeMap<>();
             ResultSet resultSet = metaDataSql.getColumns(null, null, primaryTableToInsertInto, null);
             String name = null;
@@ -163,7 +168,7 @@ public class Populator {
                 name = resultSet.getString("COLUMN_NAME");
                 type = resultSet.getString("TYPE_NAME");
                 arrayList.put(name, new Attribute(name, type));
-            }
+            }*/
 
             // Create a Statement object to execute the query with.
             // A Statement is not thread-safe.
@@ -193,13 +198,27 @@ public class Populator {
                     System.out.println("Column Names: " + nameColumn + "\n"); //print out so we can see them
                 }
   
-                for(int i = 1; i <= countColumn; i++){
+               /* for(int i = 1; i <= countColumn; i++){
+                    int intType = 0;
                     if(type.equals("VARCHAR(64)")){ //if type equals VARCHAR(64)
-                        value = value + results.getString(i) + ",";  //put the value in the string
+                        value = value + "'" + results.getString(i) + "'" + ",";  //put the value in the string
+                    } else if(type.equals("INTEGER")){
+                        //value = value + results.getString(i) + ","; //put the value in the string but in an integer way
+                        //Integer integer = Integer.parseInt(value);
+                        //value = value + integer;
+                        //intType = Integer.parseInt(results.getString(i));
+                        value = value + results.getString(i) + ",";
                     } else {
-                        value = value + results.getString(i) + ","; //put the value in the string but in an integer way
-                        Integer integer = Integer.parseInt(value);
-                        value = value + integer;
+                        value = value + '"' + results.getString(i) + '"' + ",";
+                    }
+                }*/
+                for(int i = 1; i <= countColumn; i++){
+                    int intType = 0;
+                    try{
+                        intType = Integer.parseInt(results.getString(i));
+                        value = value + results.getString(i) + ",";
+                    } catch (NumberFormatException e){
+                        value = value + "'" + results.getString(i) + "'" + ",";
                     }
                 }
                 value = value.substring(0, value.lastIndexOf(",")); //trim the last comma

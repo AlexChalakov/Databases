@@ -44,6 +44,9 @@ public class Populator {
         p.milestone1("R.csv", "R");
         p.milestone1("S.csv", "S");
         p.milestone1("B.csv", "B");
+
+        //p.milestone2("B.csv", "B", "output", false);
+
         //p.updateCensus();
         //p.changeHomePlanet(1, "Pluto");
         //p.updateCensus();
@@ -53,7 +56,7 @@ public class Populator {
         //p.changeHomePlanet(1, "Earth");
         //p.updateCensus();
         //p.populationOf("Pluto");
-        //p.milestone2("B.csv", "B", "output", false);
+
         //p.listSuperHeroesContainingPower("covid");
     }
 
@@ -153,7 +156,7 @@ public class Populator {
 
         try{
             Connection csv = csvConn();
-            Connection sqliteConnection = sqliteConn();
+            //Connection sqliteConnection = sqliteConn();
 
              /**
              * Getting table attributes.
@@ -212,6 +215,7 @@ public class Populator {
                         value = value + '"' + results.getString(i) + '"' + ",";
                     }
                 }*/
+
                 for(int i = 1; i <= countColumn; i++){
                     int intType = 0;
                     try{
@@ -221,6 +225,7 @@ public class Populator {
                         value = value + "'" + results.getString(i) + "'" + ",";
                     }
                 }
+
                 value = value.substring(0, value.lastIndexOf(",")); //trim the last comma
                 statementSQL = "INSERT OT IGNORE INTO " + primaryTableToInsertInto + "(" + nameColumn + ") VALUES(" + value + ");\n"; //insert statements
 
@@ -297,9 +302,11 @@ public class Populator {
      */
     public void updateAllAges(){
         // TODO
-        String sqlstmt = "UPDATE 'S ' SET 'j '= (strftime ('% Y ' , ' now ') - strftime ('% Y ' , a )) - (strftime ('%m -% d ' , ' now ') < strftime ( '%m -% d ' , a ))";
+        //String sqlstmt = "UPDATE 'S ' SET 'j '= (strftime ('% Y ' , ' now ') - strftime ('% Y ' , a )) - (strftime ('%m -% d ' , ' now ') < strftime ( '%m -% d ' , a ))";
         try{
-            exec(sqlstmt);
+            Connection sqlite = sqliteConn();
+            PreparedStatement st = sqlite.prepareStatement("UPDATE 'S ' SET 'j '= (strftime ('% Y ' , ' now ') - strftime ('% Y ' , a )) - (strftime ('%m -% d ' , ' now ') < strftime ( '%m -% d ' , a ))");
+            st.executeUpdate();
         } catch (SQLException e){
             e.printStackTrace();
         }

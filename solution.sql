@@ -94,26 +94,26 @@ CREATE TABLE I(
 
 /*INSERT STATEMENTS*/
 
-INSERT INTO D(c,d,e) VALUES (1,"Pluto",0);
+INSERT INTO D(c,d,e) VALUES (1,"Pluto",0); --INSERTS FOR checkCensusUpdate
 INSERT INTO D(c,d,e) VALUES (2,"Earth",0);
 
 INSERT INTO S(j,r,a,g,c_A) VALUES (22,1,2000-01-01,'Alex Chal ',1);
 INSERT INTO S(j,r,a,g,c_A) VALUES (22,45,2000-01-01,'Lincoln ',2);
 
-INSERT INTO R(r,q,p,c) VALUES (1,'Alex C ','Rockstar ',69);
+INSERT INTO R(r,q,p,c) VALUES (1,'Alex C ','Rockstar ',69); --INSERTS FOR listSuperHeroesContainingPower
 --INSERT OR IGNORE INTO F(b,r,f) VALUES( 10101, 1, 'covid triple boosted' );
 
--- INSERT INTO D(c,d,e) VALUES (11,'Hyrakius',NULL);
--- INSERT INTO D(c,d,e) VALUES (2,'Bgztl',8);
--- INSERT INTO D(c,d,e) VALUES (17,'Rimbor',30);
--- INSERT INTO D(c,d,e) VALUES (13,'Krypton',0);
--- INSERT INTO D(c,d,e) VALUES (6,'Colu',30);
+INSERT INTO D(c,d,e) VALUES (11,'Hyrakius',NULL);
+INSERT INTO D(c,d,e) VALUES (2,'Bgztl',8);
+INSERT INTO D(c,d,e) VALUES (17,'Rimbor',30);
+INSERT INTO D(c,d,e) VALUES (13,'Krypton',0);
+INSERT INTO D(c,d,e) VALUES (6,'Colu',30);
 
--- INSERT INTO S(j,r,a,g,c_A) VALUES (22,14,2000-01-01,'',11);
--- INSERT INTO S(j,r,a,g,c_A) VALUES (22,29,2000-01-01,'Brin Londo ',11);
--- INSERT INTO S(j,r,a,g,c_A) VALUES (22,34,2000-01-01,'Mysa Nal ',17);
--- INSERT INTO S(j,r,a,g,c_A) VALUES (22,26,2000-01-01,"Projectra Wind'zzor ",17);
--- INSERT INTO S(j,r,a,g,c_A) VALUES (22,19,2000-01-01,'Lar Gand ',6);
+INSERT INTO S(j,r,a,g,c_A) VALUES (22,14,2000-01-01,'',11);
+INSERT INTO S(j,r,a,g,c_A) VALUES (22,29,2000-01-01,'Brin Londo ',11);
+INSERT INTO S(j,r,a,g,c_A) VALUES (22,34,2000-01-01,'Mysa Nal ',17);
+INSERT INTO S(j,r,a,g,c_A) VALUES (22,26,2000-01-01,"Projectra Wind'zzor ",17);
+INSERT INTO S(j,r,a,g,c_A) VALUES (22,19,2000-01-01,'Lar Gand ',6);
 
 INSERT INTO F(r,b,f) VALUES (14,49,'Telescopic/Microscopic Vision');
 INSERT INTO F(r,b,f) VALUES (33,102,'Superhuman strength');

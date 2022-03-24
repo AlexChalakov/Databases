@@ -109,11 +109,11 @@ INSERT INTO D(c,d,e) VALUES (17,'Rimbor',30);
 INSERT INTO D(c,d,e) VALUES (13,'Krypton',0);
 INSERT INTO D(c,d,e) VALUES (6,'Colu',30);
 
-INSERT INTO S(j,r,a,g,c_A) VALUES (22,14,2000-01-01,'',11);
-INSERT INTO S(j,r,a,g,c_A) VALUES (22,29,2000-01-01,'Brin Londo ',11);
-INSERT INTO S(j,r,a,g,c_A) VALUES (22,34,2000-01-01,'Mysa Nal ',17);
-INSERT INTO S(j,r,a,g,c_A) VALUES (22,26,2000-01-01,"Projectra Wind'zzor ",17);
-INSERT INTO S(j,r,a,g,c_A) VALUES (22,19,2000-01-01,'Lar Gand ',6);
+INSERT INTO S(j,r,a,g,c_A) VALUES (22,14,'2000-01-01','',11);
+INSERT INTO S(j,r,a,g,c_A) VALUES (22,29,'2000-01-01','Brin Londo ',11);
+INSERT INTO S(j,r,a,g,c_A) VALUES (22,34,'2000-01-01','Mysa Nal ',17);
+INSERT INTO S(j,r,a,g,c_A) VALUES (22,26,'2000-01-01',"Projectra Wind'zzor ",17);
+INSERT INTO S(j,r,a,g,c_A) VALUES (22,19,'2000-01-01','Lar Gand ',6);
 
 INSERT INTO F(r,b,f) VALUES (14,49,'Telescopic/Microscopic Vision');
 INSERT INTO F(r,b,f) VALUES (33,102,'Superhuman strength');

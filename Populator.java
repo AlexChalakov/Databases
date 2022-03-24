@@ -126,6 +126,18 @@ public class Populator {
      */
     public void milestone4() {
         // TODO
+        try {
+            Populator p = new Populator();
+            Connection csv = csvConn();
+            DatabaseMetaData metaDataSql = csv.getMetaData();
+            ResultSet resultSet = metaDataSql.getTables(null, null, "%", null);
+
+            while(resultSet.next()){
+                p.milestone2(resultSet.getString(3), resultSet.getString(3), "solution.sql", true);
+            }
+        } catch (Exception e){
+            System.out.println(e);
+        }
     }
 
     /**
@@ -302,10 +314,9 @@ public class Populator {
      */
     public void updateAllAges(){
         // TODO
-        //String sqlstmt = "UPDATE 'S ' SET 'j '= (strftime ('% Y ' , ' now ') - strftime ('% Y ' , a )) - (strftime ('%m -% d ' , ' now ') < strftime ( '%m -% d ' , a ))";
         try{
             Connection sqlite = sqliteConn();
-            PreparedStatement st = sqlite.prepareStatement("UPDATE 'S ' SET 'j '= (strftime ('% Y ' , ' now ') - strftime ('% Y ' , a )) - (strftime ('%m -% d ' , ' now ') < strftime ( '%m -% d ' , a ))");
+            PreparedStatement st = sqlite.prepareStatement("UPDATE 'S' SET 'j' = (strftime ('%Y' , 'now') - strftime ('%Y' , a )) - (strftime ('%m -%d' , 'now') < strftime ('%m -%d' , a ))");
             st.executeUpdate();
         } catch (SQLException e){
             e.printStackTrace();
@@ -371,7 +382,7 @@ public class Populator {
                 }
                 result.add(resultSet.getString(1));
             }
-            System.out.println(result);
+            //System.out.println(result);
         } catch (SQLException e){
             e.printStackTrace();
         }
@@ -394,7 +405,10 @@ public class Populator {
      */
     public String createInsertSQLForCsvFile(String csvFile,String[] entities,String[] relations){
         StringBuilder builder=new StringBuilder();
-        // TODO
+        //TODO
+        for(String entity : entities){
+            builder.append(insertCSVData(csvFile,entity));
+        }
         return builder.toString();
     }
 
@@ -670,7 +684,7 @@ public class Populator {
 
             sqlstmtHome = "UPDATE S SET c_A = " + resultSet.getInt(1) + " WHERE r = " + i + ";\n";
             exec(sqlstmtHome);
-            System.out.println(sqlstmtHome);
+            //System.out.println(sqlstmtHome);
         } catch (SQLException e){
             e.printStackTrace();
         }
@@ -696,7 +710,7 @@ public class Populator {
                 }
 
                 result = resultSet.getInt(1);
-                System.out.println(result);
+                //System.out.println(result);
             }
         } catch (SQLException e){
             e.printStackTrace();

@@ -38,14 +38,16 @@ public class Populator {
         // calls to methods which will complete the database setup and data population
         Populator p = new Populator();
         p.setup("solution.sql");
-        p.milestone1("L.csv", "L");
-        p.milestone1("F.csv", "F");
-        p.milestone1("D.csv", "D");
-        p.milestone1("R.csv", "R");
-        p.milestone1("S.csv", "S");
-        p.milestone1("B.csv", "B");
+        //p.milestone1("L.csv", "L");
+        //p.milestone1("F.csv", "F");
+        //p.milestone1("D.csv", "D");
+        //p.milestone1("R.csv", "R");
+        //p.milestone1("S.csv", "S");
+        //p.milestone1("B.csv", "B");
 
         //p.milestone2("B.csv", "B", "output", false);
+
+        //p.milestone4();
 
         //p.updateCensus();
         //p.changeHomePlanet(1, "Pluto");
@@ -125,14 +127,13 @@ public class Populator {
      * populate the appropriate ENTITIES.
      */
     public void milestone4() {
-        // TODO
         try {
             Populator p = new Populator();
             Connection csv = csvConn();
             DatabaseMetaData metaDataSql = csv.getMetaData();
-            ResultSet resultSet = metaDataSql.getTables(null, null, "%", null);
+            ResultSet resultSet = metaDataSql.getTables(null, null, "%", null); //getting tables
 
-            while(resultSet.next()){
+            while(resultSet.next()){ //looping through the tables and executing milestone2 for every table
                 p.milestone2(resultSet.getString(3), resultSet.getString(3), "solution.sql", true);
             }
         } catch (Exception e){
@@ -168,25 +169,6 @@ public class Populator {
 
         try{
             Connection csv = csvConn();
-            //Connection sqliteConnection = sqliteConn();
-
-             /**
-             * Getting table attributes.
-             * @author David Bowes
-             */
-            /*DatabaseMetaData metaDataSql = sqliteConnection.getMetaData();
-            TreeMap<String, Attribute> arrayList = new TreeMap<>();
-            ResultSet resultSet = metaDataSql.getColumns(null, null, primaryTableToInsertInto, null);
-            String name = null;
-            String type = null;
-            while (resultSet.next()){
-                name = resultSet.getString("COLUMN_NAME");
-                type = resultSet.getString("TYPE_NAME");
-                arrayList.put(name, new Attribute(name, type));
-            }*/
-
-            // Create a Statement object to execute the query with.
-            // A Statement is not thread-safe.
             Statement stmt = csv.createStatement();
 
             // Declare all the needed variables
@@ -196,45 +178,29 @@ public class Populator {
             String nameColumn = "";
             String value = "";
             String statementSQL = null;
-            System.out.println("");
+            //System.out.println("");
 
             //getting the headers and initialising them into the nameColumn variable
             while(results.next()){ //looping through all the rows
                 if(metaData == null){ //if metadata is null, go into the if statement
                     metaData = results.getMetaData(); //getting metadata
 				    countColumn = metaData.getColumnCount(); //getting our column count
-                    //System.out.println(countColumn);
 
                     for (int i = 1; i <= countColumn; i++)
 					{
                         nameColumn += metaData.getColumnName(i) + ","; //get all the column names
 					}
                     nameColumn = nameColumn.substring(0, nameColumn.length() - 1); //trim the last comma
-                    System.out.println("Column Names: " + nameColumn + "\n"); //print out so we can see them
+                    //System.out.println("Column Names: " + nameColumn + "\n"); //print out so we can see them
                 }
   
-               /* for(int i = 1; i <= countColumn; i++){
-                    int intType = 0;
-                    if(type.equals("VARCHAR(64)")){ //if type equals VARCHAR(64)
-                        value = value + "'" + results.getString(i) + "'" + ",";  //put the value in the string
-                    } else if(type.equals("INTEGER")){
-                        //value = value + results.getString(i) + ","; //put the value in the string but in an integer way
-                        //Integer integer = Integer.parseInt(value);
-                        //value = value + integer;
-                        //intType = Integer.parseInt(results.getString(i));
-                        value = value + results.getString(i) + ",";
-                    } else {
-                        value = value + '"' + results.getString(i) + '"' + ",";
-                    }
-                }*/
-
                 for(int i = 1; i <= countColumn; i++){
                     int intType = 0;
                     try{
                         intType = Integer.parseInt(results.getString(i));
                         value = value + results.getString(i) + ",";
                     } catch (NumberFormatException e){
-                        value = value + "'" + results.getString(i) + "'" + ",";
+                        value = value + '"' + results.getString(i) + '"' + ",";
                     }
                 }
 
@@ -313,9 +279,8 @@ public class Populator {
      * See the courswork assignment for an appropriate sql update statement.
      */
     public void updateAllAges(){
-        // TODO
         try{
-            Connection sqlite = sqliteConn();
+            Connection sqlite = sqliteConn(); //connection
             PreparedStatement st = sqlite.prepareStatement("UPDATE 'S' SET 'j' = (strftime ('%Y' , 'now') - strftime ('%Y' , a )) - (strftime ('%m -%d' , 'now') < strftime ('%m -%d' , a ))");
             st.executeUpdate();
         } catch (SQLException e){
@@ -330,10 +295,9 @@ public class Populator {
      * ALSO ignore ages which are less than 0.
      * 
      */
-    public void updateCensus(){
-        // TODO 
+    public void updateCensus(){ 
         try{
-            Connection sqlite = sqliteConn();
+            Connection sqlite = sqliteConn(); //connection
             PreparedStatement st = sqlite.prepareStatement("UPDATE D SET e = (SELECT COUNT(S.c_A) FROM S WHERE S.c_A = D.c AND S.j BETWEEN 0 AND 99);");
             st.executeUpdate();
         } catch (SQLException e){
@@ -368,15 +332,14 @@ public class Populator {
      */
     public List<String> listSuperHeroesContainingPower(String txt){
         List<String> result=new ArrayList<>();
-        // TODO
         //R TABLE
         try{
-            Connection sqlite = sqliteConn();
-            Statement stmt = sqlite.createStatement();
-            ResultSet resultSet = stmt.executeQuery("SELECT R.q FROM R INNER JOIN F ON R.r = F.r WHERE F.f LIKE '%" + txt + "%';");
+            Connection sqlite = sqliteConn(); //connection
+            Statement stmt = sqlite.createStatement(); //statement
+            ResultSet resultSet = stmt.executeQuery("SELECT R.q FROM R INNER JOIN F ON R.r = F.r WHERE F.f LIKE '%" + txt + "%';"); //correct select query
             ResultSetMetaData metaData = null;
 
-            while(resultSet.next()){
+            while(resultSet.next()){ //looping through the select
                 if(metaData == null){
                     metaData = resultSet.getMetaData();
                 }
@@ -405,10 +368,9 @@ public class Populator {
      */
     public String createInsertSQLForCsvFile(String csvFile,String[] entities,String[] relations){
         StringBuilder builder=new StringBuilder();
-        //TODO
-        for(String entity : entities){
+        /*for(String entity : entities){
             builder.append(insertCSVData(csvFile,entity));
-        }
+        }*/ //part of it
         return builder.toString();
     }
 
@@ -674,15 +636,14 @@ public class Populator {
      * @throws UnknownPersonException if the person does not exist
      */
     public void changeHomePlanet(int i, String planetName) throws UnknownPlanetException,UnknownPersonException{
-        // TODO
         try{
-            Connection sqlite = sqliteConn();
-            Statement stmt = sqlite.createStatement();
+            Connection sqlite = sqliteConn(); //connection
+            Statement stmt = sqlite.createStatement(); //statement
             String sql = "SELECT c FROM D WHERE d = '" + planetName +"';";
             ResultSet resultSet = stmt.executeQuery(sql);
             String sqlstmtHome = "";
 
-            sqlstmtHome = "UPDATE S SET c_A = " + resultSet.getInt(1) + " WHERE r = " + i + ";\n";
+            sqlstmtHome = "UPDATE S SET c_A = " + resultSet.getInt(1) + " WHERE r = " + i + ";\n"; //correct update query
             exec(sqlstmtHome);
             //System.out.println(sqlstmtHome);
         } catch (SQLException e){
@@ -697,19 +658,18 @@ public class Populator {
      */
     public long populationOf(String planetName) throws UnknownPlanetException{
         long result=-1;
-        // TODO
         String sqlstmt = "SELECT e FROM D WHERE d = '" + planetName + "';";
         try{
             Connection sqlite = sqliteConn();
             Statement stmt = sqlite.createStatement();
             ResultSet resultSet = stmt.executeQuery(sqlstmt);
             ResultSetMetaData metaData = null;
-            while(resultSet.next()){
+            while(resultSet.next()){ //loop through the select
                 if(metaData == null){
                     metaData = resultSet.getMetaData();
                 }
 
-                result = resultSet.getInt(1);
+                result = resultSet.getInt(1); //get matches
                 //System.out.println(result);
             }
         } catch (SQLException e){

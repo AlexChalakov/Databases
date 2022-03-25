@@ -89,9 +89,6 @@ CREATE TABLE I(
     FOREIGN KEY(i) REFERENCES B(i)
     ); /*correct*/
 
-/*many to many - new table*/
-/*many to one - reference the inbetween table*/
-
 /*INSERT STATEMENTS*/
 
 INSERT INTO D(c,d,e) VALUES (1,"Pluto",0); --INSERTS FOR checkCensusUpdate
